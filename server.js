@@ -1,70 +1,52 @@
 const express = require('express');
-const cors = require('cors');
-const fetch = require('node-fetch'); // Use 'node-fetch' for Node.js
+const axios = require('axios');
+const cors = require('cors'); // Add this line
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
+// Add CORS middleware
 app.use(cors());
 
-// For Restaurant API
-app.get('/api/restaurants', async (req, res) => {
-    const url = "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING";
+const CDN_URL = 'https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/';
+const MENU_URL = 'https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=12.9351929&lng=77.62448069999999&restaurantId=';
+const RESTAURANT_LIST = 'https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING';
 
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('Error fetching restaurants:', error);
-        res.status(500).send('An error occurred');
-    }
+app.get('/api/cdn/:path', async (req, res) => {
+  try {
+    const response = await axios.get(`${CDN_URL}${req.params.path}`);
+    res.send(response.data);
+  } catch (error) {
+    console.error('Error fetching CDN data:', error.message); // Log the error
+    res.status(error.response ? error.response.status : 500).send(error.message);
+  }
 });
 
-// For Menu API
 app.get('/api/menu', async (req, res) => {
-    const url = "https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=12.9351929&lng=77.62448069999999&restaurantId=";
+  const { restaurantId } = req.query;
+  if (!restaurantId) {
+    return res.status(400).send('Restaurant ID is required');
+  }
 
-    try {
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36'
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        res.json(data);
-    } catch (error) {
-        console.error('Error fetching menu:', error);
-        res.status(500).send('An error occurred');
-    }
+  try {
+    const response = await axios.get(MENU_URL + restaurantId);
+    res.send(response.data);
+  } catch (error) {
+    console.error('Error fetching menu data:', error.message); // Log the error
+    res.status(error.response ? error.response.status : 500).send(error.message);
+  }
 });
 
-// For CDN Image
-app.get("/api/cdn-image/:imageId", (req, res) => {
-    const imageUrl = `https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/${req.params.imageId}`;
-    res.redirect(imageUrl);
+app.get('/api/restaurant-list', async (req, res) => {
+  try {
+    const response = await axios.get(RESTAURANT_LIST);
+    res.send(response.data);
+  } catch (error) {
+    console.error('Error fetching restaurant list data:', error.message); // Log the error
+    res.status(error.response ? error.response.status : 500).send(error.message);
+  }
 });
 
-app.get('/', (req, res) => {
-    res.json({ "test": "Welcome to FoodieCo! - See Live Web URL for this Server - https://foodie-co.netlify.app" });
-});
-
-app.listen(port, () => {
-    console.log(`Server is listening on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
