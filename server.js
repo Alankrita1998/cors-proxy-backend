@@ -9,10 +9,7 @@ app.use(cors());
 
 // For Restaurant API
 app.get('/api/restaurants', async (req, res) => {
-    const { lat, lng, page_type } = req.query;
-    console.log(req.query);
-
-    const url = `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&page_type=${page_type}`;
+    const url = "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING";
 
     try {
         const response = await fetch(url, {
@@ -27,7 +24,6 @@ app.get('/api/restaurants', async (req, res) => {
         }
 
         const data = await response.json();
-        console.log(data);
         res.json(data);
     } catch (error) {
         console.error('Error fetching restaurants:', error);
@@ -37,10 +33,7 @@ app.get('/api/restaurants', async (req, res) => {
 
 // For Menu API
 app.get('/api/menu', async (req, res) => {
-    const { 'page-type': page_type, 'complete-menu': complete_menu, lat, lng, submitAction, restaurantId } = req.query;
-    console.log(req.query);
-
-    const url = `https://www.swiggy.com/dapi/menu/pl?page-type=${page_type}&complete-menu=${complete_menu}&lat=${lat}&lng=${lng}&submitAction=${submitAction}&restaurantId=${restaurantId}`;
+    const url = "https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=12.9351929&lng=77.62448069999999&restaurantId=";
 
     try {
         const response = await fetch(url, {
@@ -55,7 +48,6 @@ app.get('/api/menu', async (req, res) => {
         }
 
         const data = await response.json();
-        console.log(data);
         res.json(data);
     } catch (error) {
         console.error('Error fetching menu:', error);
@@ -63,7 +55,7 @@ app.get('/api/menu', async (req, res) => {
     }
 });
 
-// API 3: CDN URL (Images)
+// For CDN Image
 app.get("/api/cdn-image/:imageId", (req, res) => {
     const imageUrl = `https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_660/${req.params.imageId}`;
     res.redirect(imageUrl);
