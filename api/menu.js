@@ -39,8 +39,6 @@ async function getSwiggySession(retryCount = 0) {
 module.exports = async function (req, res) {
   try {
     const resId = req.query.resId;
-    const lat = req.query.lat || '12.9351929';
-    const lng = req.query.lng || '77.62448069999999';
 
     const session = await getSwiggySession();
 
@@ -59,7 +57,7 @@ module.exports = async function (req, res) {
     };
 
     const menuResponse = await axios.get(
-      `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=${lat}&lng=${lng}&restaurantId=${resId}`,
+      `https://www.swiggy.com/dapi/menu/pl?page-type=REGULAR_MENU&complete-menu=true&lat=12.9351929&lng=77.62448069999999&restaurantId=${resId}`,
       { headers: swiggyHeaders }
     );
 

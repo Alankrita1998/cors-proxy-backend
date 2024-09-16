@@ -8,9 +8,6 @@ const baseHeaders = {
 
 module.exports = async function (req, res) {
   try {
-    const lat = req.query.lat || '12.9351929';
-    const lng = req.query.lng || '77.62448069999999';
-
     const requestHeaders = {
       ...baseHeaders,
       'Referer': 'https://www.swiggy.com/',
@@ -18,7 +15,7 @@ module.exports = async function (req, res) {
     };
 
     const response = await axios.get(
-      `https://www.swiggy.com/dapi/restaurants/list/v5?lat=${lat}&lng=${lng}&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`,
+      `https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9351929&lng=77.62448069999999&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING`,
       { headers: requestHeaders }
     );
 
